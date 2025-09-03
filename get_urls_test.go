@@ -28,6 +28,25 @@ func TestGetURLsFromHTML(t *testing.T) {
 </html>
 `,
 			expected: []string{"https://blog.boot.dev/path/one", "https://other.com/path/one"},
+		}, {
+			name:     "three relative URLs",
+			inputURL: "https://api.meditait.com",
+			inputBody: `
+<html>
+	<body>
+		<a href="/path/one">
+			<span>Boot.dev</span>
+		</a>
+		<a href="/path/two">
+			<span>Boot.dev</span>
+		</a>
+		<a href="/path/three">
+			<span>Boot.dev</span>
+		</a>
+	</body>
+</html>
+`,
+			expected: []string{"https://api.meditait.com/path/one", "https://api.meditait.com/path/two", "https://api.meditait.com/path/three"},
 		},
 		// add more test cases here
 	}
