@@ -16,9 +16,12 @@ func main() {
 	}
 	rawURL := args[0]
 	fmt.Println("starting crawl of:", rawURL)
-	pages := make(map[string]int)
-	crawlPage(rawURL, rawURL, pages)
-	for k, v := range pages {
+	cfg := config{
+		pages:   make(map[string]int),
+		baseURL: rawURL,
+	}
+	cfg.crawlPage(rawURL)
+	for k, v := range cfg.pages {
 		fmt.Println(k, " - ", v)
 	}
 }

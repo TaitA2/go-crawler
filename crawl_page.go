@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
-	if !isSameDomain(rawBaseURL, rawCurrentURL) {
+func (cfg *config) crawlPage(rawCurrentURL string) {
+	if !isSameDomain(cfg.baseURL, rawCurrentURL) {
 		return
 	}
 	curURL, err := normalizeURL(rawCurrentURL)
@@ -15,11 +15,11 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 		log.Printf("\033[31m%v\033[37m", err)
 		return
 	}
-	if _, ok := pages[curURL]; ok {
-		pages[curURL]++
+	if _, ok := cfg.pages[curURL]; ok {
+		cfg.pages[curURL]++
 		return
 	} else {
-		pages[curURL] = 1
+		cfg.pages[curURL] = 1
 	}
 	html, err := getHTML(curURL)
 	if err != nil {
@@ -27,13 +27,13 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 		return
 	}
 	fmt.Println("Got html for URL: ", curURL)
-	newURLs, err := getURLsFromHTML(html, rawBaseURL)
+	newURLs, err := getURLsFromHTML(html, cfg.baseURL)
 	if err != nil {
 		log.Printf("Error getting urls from html: %v", err)
 		return
 	}
 	for _, url := range newURLs {
-		crawlPage(rawBaseURL, url, pages)
+		cfg.crawlPage(url)
 	}
 
 }
