@@ -2,17 +2,23 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 )
 
+func receive(cfg *config) {
+	<-cfg.concurrencyControl
+}
+
 func (cfg *config) crawlPage(rawCurrentURL string) {
+	defer cfg.wg.Done()
+	defer receive(cfg)
+	cfg.concurrencyControl <- struct{}{}
 	if !isSameDomain(cfg.baseURL, rawCurrentURL) {
 		return
 	}
 	curURL, err := normalizeURL(rawCurrentURL)
 	if err != nil {
-		log.Printf("\033[31m%v\033[37m", err)
+		fmt.Printf("\033[31m%v\033[37m\n", err)
 		return
 	}
 	cfg.mu.Lock()
@@ -26,17 +32,18 @@ func (cfg *config) crawlPage(rawCurrentURL string) {
 	cfg.mu.Unlock()
 	html, err := getHTML(curURL)
 	if err != nil {
-		log.Printf("\033[31m%v\033[37m", err)
+		fmt.Printf("\033[31m%v\033[37m\n", err)
 		return
 	}
-	fmt.Println("Got html for URL: ", curURL)
+	fmt.Printf("\033[32mGot html for URL: %s\033[37m\n", curURL)
 	newURLs, err := getURLsFromHTML(html, cfg.baseURL)
 	if err != nil {
-		log.Printf("Error getting urls from html: %v", err)
+		fmt.Printf("\033[31mError getting urls from html: %v\033[37m\n", err)
 		return
 	}
 	for _, url := range newURLs {
-		cfg.crawlPage(url)
+		cfg.wg.Add(1)
+		go cfg.crawlPage(url)
 	}
 
 }

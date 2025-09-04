@@ -17,12 +17,18 @@ func main() {
 	}
 	rawURL := args[0]
 	fmt.Println("starting crawl of:", rawURL)
+	const maxConcurrency = 10
 	cfg := config{
-		pages:   make(map[string]int),
-		baseURL: rawURL,
-		mu:      &sync.Mutex{},
+		pages:              make(map[string]int),
+		baseURL:            rawURL,
+		mu:                 &sync.Mutex{},
+		concurrencyControl: make(chan struct{}, maxConcurrency),
+		wg:                 &sync.WaitGroup{},
 	}
-	cfg.crawlPage(rawURL)
+	cfg.wg.Add(1)
+	go cfg.crawlPage(rawURL)
+	cfg.wg.Wait()
+	fmt.Println()
 	for k, v := range cfg.pages {
 		fmt.Println(k, " - ", v)
 	}
