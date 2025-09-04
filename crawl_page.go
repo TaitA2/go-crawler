@@ -11,6 +11,9 @@ func receive(cfg *config) {
 
 func (cfg *config) crawlPage(rawCurrentURL string) {
 	defer cfg.wg.Done()
+	if cfg.checkMaxPages() {
+		return
+	}
 	defer receive(cfg)
 	cfg.concurrencyControl <- struct{}{}
 	if !isSameDomain(cfg.baseURL, rawCurrentURL) {
@@ -29,6 +32,7 @@ func (cfg *config) crawlPage(rawCurrentURL string) {
 	} else {
 		cfg.pages[curURL] = 1
 	}
+	cfg.pages["total"]++
 	cfg.mu.Unlock()
 	html, err := getHTML(curURL)
 	if err != nil {
@@ -53,4 +57,10 @@ func isSameDomain(baseURL, curURL string) bool {
 		return true
 	}
 	return strings.Contains(curURL, baseURL)
+}
+
+func (cfg *config) checkMaxPages() bool {
+	cfg.mu.Lock()
+	defer cfg.mu.Unlock()
+	return cfg.pages["total"] >= cfg.maxPages
 }
