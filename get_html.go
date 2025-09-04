@@ -9,7 +9,7 @@ import (
 
 func getHTML(rawURL string) (string, error) {
 	client := http.Client{}
-	req, err := http.NewRequest("GET", rawURL, nil)
+	req, err := http.NewRequest("GET", "http://"+rawURL, nil)
 	if err != nil {
 		return "", fmt.Errorf("Error making http request: %v", err)
 	}

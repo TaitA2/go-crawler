@@ -1,8 +1,11 @@
 package main
 
-import "net/url"
+import (
+	"net/url"
+	"strings"
+)
 
 func normalizeURL(inURL string) (string, error) {
 	outURL, err := url.Parse(inURL)
-	return outURL.Hostname() + outURL.Path, err
+	return strings.ReplaceAll(outURL.Hostname()+outURL.Path, "//", "/"), err
 }
