@@ -12,7 +12,7 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 	}
 	curURL, err := normalizeURL(rawCurrentURL)
 	if err != nil {
-		log.Printf("ERROR: %v", err)
+		log.Printf("\033[31m%v\033[37m", err)
 		return
 	}
 	if _, ok := pages[curURL]; ok {
@@ -23,7 +23,7 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 	}
 	html, err := getHTML(curURL)
 	if err != nil {
-		log.Printf("ERROR: %v", err)
+		log.Printf("\033[31m%v\033[37m", err)
 		return
 	}
 	fmt.Println("Got html for URL: ", curURL)
