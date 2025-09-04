@@ -31,10 +31,7 @@ func main() {
 	cfg.wg.Add(1)
 	go cfg.crawlPage(rawURL)
 	cfg.wg.Wait()
-	fmt.Println()
-	for k, v := range cfg.pages {
-		fmt.Println(k, " - ", v)
-	}
+	printReport(cfg.pages, cfg.baseURL)
 }
 
 func getParams(args []string) (url string, maxConcurrency, maxPages int) {

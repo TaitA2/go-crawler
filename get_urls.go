@@ -6,7 +6,7 @@ import (
 
 func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 	var urls []string
-	htmlLines := strings.SplitSeq(htmlBody, "\n")
+	htmlLines := strings.SplitSeq(htmlBody, ">")
 	for line := range htmlLines {
 		if strings.Contains(line, "href=\"") {
 			url := strings.Split(line, "\"")[1]

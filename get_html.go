@@ -19,7 +19,7 @@ func getHTML(rawURL string) (string, error) {
 		return "", fmt.Errorf("Error getting http response: %v", err)
 	}
 	ctype := res.Header.Get("content-type")
-	if !strings.Contains(ctype, "text/html") {
+	if !strings.Contains(ctype, "text/html") && !strings.Contains(ctype, "text/plain") {
 		return "", fmt.Errorf("Error in http response, invalid content-type header : %s", ctype)
 	}
 	defer res.Body.Close()
