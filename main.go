@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 )
 
 func main() {
@@ -19,6 +20,7 @@ func main() {
 	cfg := config{
 		pages:   make(map[string]int),
 		baseURL: rawURL,
+		mu:      &sync.Mutex{},
 	}
 	cfg.crawlPage(rawURL)
 	for k, v := range cfg.pages {

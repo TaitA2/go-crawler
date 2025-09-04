@@ -15,12 +15,15 @@ func (cfg *config) crawlPage(rawCurrentURL string) {
 		log.Printf("\033[31m%v\033[37m", err)
 		return
 	}
+	cfg.mu.Lock()
 	if _, ok := cfg.pages[curURL]; ok {
 		cfg.pages[curURL]++
+		cfg.mu.Unlock()
 		return
 	} else {
 		cfg.pages[curURL] = 1
 	}
+	cfg.mu.Unlock()
 	html, err := getHTML(curURL)
 	if err != nil {
 		log.Printf("\033[31m%v\033[37m", err)
